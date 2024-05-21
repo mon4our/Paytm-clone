@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 mongoose.connect("mongodb+srv://mohitstudy:GTtYdayuxF5in5md@mohitruwatia.ka2ookq.mongodb.net/")
 
-const user=mongoose.Schema({
+const user= new mongoose.Schema({
     username: {
         type:String,
         required: true,
@@ -26,5 +26,18 @@ const user=mongoose.Schema({
         }
 })
 
-const userModel=mongoose.model("userModel",user);
-module.exports={userModel};
+const accountSchema= new mongoose.Schema({
+    userId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    balance:{
+        type:Number,
+        required: true
+    }
+});
+
+const Account=mongoose.model("Account",accountSchema)
+const User=mongoose.model("User",user);
+module.exports={User,Account};
