@@ -3,7 +3,7 @@ const zod=require("zod");
 const jwt=require("jsonwebtoken");
 const JWT_SECRET=require("../config");
 
-const {User}=require("../db");
+const {User, Account}=require("../db");
 
 const {authMiddleware}=require("../middleware");
 
@@ -22,26 +22,30 @@ router.post("/signup",async (req,res)=>{
     if(!success){
             return res.json({
                 msg:"Email already taken/ Incorrect Inputs"
-        })
-            const user = await User.findOne({
-                username:body.username
             })
-            if(user.id){
-                return res.json({ 
-                msg:"Email already taken/ Incorrect Inputs"
-            })
-
-            const dbuser=await User.create(body);
-            const token=jwt.sign({
-                userId:dbuser._id
-            },JWT_SECRET);
-
-            res.json({
-                msg:"User created successfully",
-                token:token
-            })
-        }
     }
+    const user = await User.findOne({
+        username:body.username
+    })
+    if(user){
+        return res.json({ 
+            msg:"Email already taken/ Incorrect Inputs"
+        })
+    }
+    const dbuser=await User.create(body);
+    const userRef=dbuser._id;
+    await Account.create({
+        userRef,
+        balance: 1+Math.random()*10000
+    })
+    const token=jwt.sign({
+        userId:dbuser._id
+    },JWT_SECRET);
+
+    res.json({
+        msg:"User created successfully",
+        token:token
+    })
 })
 const signinSchema=zod.object({
     username: zod.string().email(),
