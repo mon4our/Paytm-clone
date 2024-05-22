@@ -9,6 +9,11 @@ const user= new mongoose.Schema({
         lowercase: true,
         maxLength: 30
         },
+    password: {
+        type: String,
+        minLength: 6,
+        required: true
+        },
     fname: {
         type: String,
         maxLength: 30,
@@ -19,18 +24,14 @@ const user= new mongoose.Schema({
         maxLength: 30,
         required: true
         },
-    password: {
-        type: String,
-        minLength: 6,
-        required: true
-        }
+    
 })
 
 const accountSchema= new mongoose.Schema({
     userId:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        required: true,
+        ref: 'User'
     },
     balance:{
         type:Number,
