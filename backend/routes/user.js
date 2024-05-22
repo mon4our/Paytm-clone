@@ -1,13 +1,14 @@
 const express=require("express");
+const router=express.Router();
+
 const zod=require("zod");
 const jwt=require("jsonwebtoken");
-const JWT_SECRET=require("../config");
+const {JWT_SECRET}=require("../config");
 
 const {User, Account}=require("../db");
 
 const {authMiddleware}=require("../middleware");
 
-const router=express.Router();
 
 const signupSchema=zod.object({
     username:zod.string().email(),
@@ -17,22 +18,26 @@ const signupSchema=zod.object({
 })
 
 router.post("/signup",async (req,res)=>{
-    const body=req.body;
     const {success}=signupSchema.safeParse(req.body);
     if(!success){
-            return res.json({
+            return res.status(411).json({
                 msg:"Email already taken/ Incorrect Inputs"
             })
     }
     const user = await User.findOne({
-        username:body.username
+        username:req.body.username
     })
     if(user){
-        return res.json({ 
+        return res.status(411).json({ 
             msg:"Email already taken/ Incorrect Inputs"
         })
     }
-    const dbuser=await User.create(body);
+    const dbuser=await User.create({
+        username: req.body.username,
+        password: req.body.password,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName
+    });
     const userRef=dbuser._id;
     await Account.create({
         userRef,
