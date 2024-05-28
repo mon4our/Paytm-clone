@@ -43,7 +43,8 @@ export const SendMoney = () => {
                     />
                     </div>
                     <button onClick={async () => {
-                        const message=await axios.post("http://localhost:3000/api/v1/account/transfer", {
+                        try{
+                            const message=await axios.post("http://localhost:3000/api/v1/account/transfer", {
                             to: id,
                             amount
                         }, {
@@ -53,6 +54,10 @@ export const SendMoney = () => {
                         })
                         console.log(message.status)
                         navigate("/transaction",{state: {code:message.status}});
+                        }catch(err){
+                            navigate("/transaction",{state: {code:400}});
+                        }
+                        
                     }} class="justify-center rounded-md text-sm font-medium ring-offset-background transition-colors h-10 px-4 py-2 w-full bg-green-500 text-white">
                         Initiate Transfer
                     </button>
